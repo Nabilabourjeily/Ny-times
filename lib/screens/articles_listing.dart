@@ -107,27 +107,29 @@ class ArticlesListingState extends State<ArticlesListing> {
               child: new CircularProgressIndicator(),
             ),
           ),
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification scrollInfo) {
-                if (!isLoading &&
-                    scrollInfo.metrics.pixels ==
-                        scrollInfo.metrics.maxScrollExtent &&
-                    period != 30) {
-                  period = 30;
-                  getArticlesList();
-                }
-                return null;
-              },
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: articlesList.length,
-                itemBuilder: (context, index) {
-                  return getItem(articlesList[index], context);
-                },
-              ),
-            ),
-          )
+          (articlesList.length > 0)
+              ? Expanded(
+                  child: NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification scrollInfo) {
+                      if (!isLoading &&
+                          scrollInfo.metrics.pixels ==
+                              scrollInfo.metrics.maxScrollExtent &&
+                          period != 30) {
+                        period = 30;
+                        getArticlesList();
+                      }
+                      return null;
+                    },
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount: articlesList.length,
+                      itemBuilder: (context, index) {
+                        return getItem(articlesList[index], context);
+                      },
+                    ),
+                  ),
+                )
+              : Container()
         ],
       ),
     );
@@ -178,11 +180,15 @@ Widget getItem(Result result, BuildContext context) {
                                         BorderRadius.all(Radius.circular(100))),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(100),
-                                  child: Image.network(
-                                    "${result.media[0].mediaMetadata[0].url}",
-                                    // height: 150.0,
-                                    // width: 100.0,
-                                  ),
+                                  child: (result.media.length > 0 &&
+                                          result.media[0].mediaMetadata.length >
+                                              0)
+                                      ? Image.network(
+                                          "${result.media[0].mediaMetadata[0].url}",
+                                          // height: 150.0,
+                                          // width: 100.0,
+                                        )
+                                      : null,
                                 ))),
                         Expanded(
                           flex: 8,
